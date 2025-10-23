@@ -7,8 +7,7 @@
 const gapiUrl = 'https://apis.google.com/js/api.js';
 const clientIds = {
     "web": "1061704433168-qjus4i8v8li3uqv75n6fksfe7l7qrt7f.apps.googleusercontent.com"
-    
-};
+    };
 
 export class GoogleDrive {
     constructor(apiLoader) {
