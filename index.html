@@ -1,289 +1,115 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-  <meta charset="utf-8" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Workspace</title>
-
-  <!-- Import A-Frame + dependencies -->
-  <script type="importmap">
-    {
-      "imports": {
-        "three": "https://threejs.org/build/three.module.js"
-      }
-    }
-  </script>
-  <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
-  <script src="https://binzume.github.io/aframe-xylayout/dist/xylayout-all.min.js"></script>
+  <script type="importmap">{"imports": {"three": "https://threejs.org/build/three.module.js"}}</script>
+  <script id='script-aframe' src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+  <script id='script-xylayout' src="https://binzume.github.io/aframe-xylayout/dist/xylayout-all.min.js"></script>
   <script src="libs/mp4player/mp4player.js"></script>
   <script src="js/gesture.js"></script>
   <script src="js/workspace.js"></script>
-  <script src="storage/internal.js" type="module"></script>
-  <script src="storage/google-drive.js" type="module"></script>
-  <script src="storage/webkit-filesystem.js" type="module"></script>
-
-  <!-- Inter font -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-
-  <style>
-    /* ============================================
-       BASE STYLES
-       ============================================ */
-    body {
-      overflow: hidden;
-      color: #fff;
-      font-size: 32px;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #000000;
-      margin: 0;
-      padding: 0;
-    }
-
-    h1 { font-size: 52px; margin: 0; }
-    h2 { margin: 10px 0; }
-
-    /* ============================================
-       LAYOUT CONTAINERS
-       ============================================ */
-    .dark {
-      background-color: rgba(0, 0, 0, 0.2);
-      border-radius: 2px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      pointer-events: all;
-      padding: 40px;
-    }
-
-    .menu {
-      width: 256px;
-      text-align: center;
-    }
-
-    .menu ul {
-      list-style-type: none;
-      margin: 0;
-      padding: 0;
-    }
-
-    /* ============================================
-       BUTTONS & LINKS
-       ============================================ */
-    a.button {
-      display: inline-block;
-      width: 100%;
-      background-color: rgba(255, 255, 255, 0.05);
-      color: #fff;
-      text-decoration: none;
-      text-align: center;
-      padding: 10px 0;
-      margin-bottom: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 2px;
-      transition: all 0.3s ease;
-    }
-
-    a.button:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.4);
-      transform: translateX(3px);
-    }
-
-    a.button:active {
-      background: #ffffff;
-      color: #000;
-      font-weight: 500;
-    }
-
-    button, a-xybutton {
-      padding: 12px 18px;
-      background: transparent;
-      color: #ffffff;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 2px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 400;
-      letter-spacing: 0.3px;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      pointer-events: all;
-    }
-
-    button:hover, a-xybutton:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.4);
-      transform: translateX(3px);
-    }
-
-    button.active, a-xybutton.active {
-      background: #ffffff;
-      border-color: #ffffff;
-      color: #000000;
-      font-weight: 500;
-    }
-
-    /* ============================================
-       HEADER
-       ============================================ */
-    .header {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      padding: 24px 32px;
-      background: linear-gradient(180deg, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0) 100%);
-      color: #ffffff;
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      z-index: 100;
-    }
-
-    .header h1 {
-      font-size: 28px;
-      font-weight: 300;
-      letter-spacing: 0.5px;
-      margin: 0;
-    }
-
-    /* ============================================
-       OVERLAY LINKS
-       ============================================ */
-    .overlay-link {
-      position: absolute;
-      top: 10pt;
-      right: 20pt;
-      background: rgba(255, 255, 255, 0.05);
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 2px;
-      padding: 8px 14px;
-      backdrop-filter: blur(10px);
-      text-decoration: none;
-      font-size: 13px;
-      letter-spacing: 0.3px;
-      transition: all 0.3s ease;
-    }
-
-    .overlay-link:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.4);
-    }
-
-    .overlay-link:nth-of-type(2) {
-      right: 150pt;
-    }
-
-    /* ============================================
-       A-SCENE
-       ============================================ */
-    a-scene {
-      width: 100%;
-      height: 100vh;
-    }
-
-    a-xywindow, a-xybutton, a-xycontainer, a-xyscroll {
-      font-family: 'Inter', sans-serif !important;
-      color: #ffffff;
-    }
-
-  </style>
+  <script src="storage/internal.js" type='module'></script>
+  <script src="storage/google-drive.js" type='module'></script>
+  <script src="storage/webkit-filesystem.js" type='module'></script>
 </head>
 
-<body>
-  <div class="header">
-    <h1>Workspace</h1>
-  </div>
-
-  <div id="applications" style="display:none">
-    <a id="applist" href="#apps-panel" class="hidden">Apps</a>
-    <a id="main-menu" href="#main-menu-template" class="hidden" data-wid="mainMenu">MainMenu</a>
-    <a id="app-chris" href="apps/chris/template.html" data-apptype="env">Chris</a>
+<body style="background-color: black; color:white;">
+  <div id='applications' style='display:none'>
+    <a id="applist" href="#apps-panel" class='hidden'>Apps</a>
+    <a id="main-menu" href="#main-menu-template" class='hidden' data-wid='mainMenu'>MainMenu</a>
+    <!--a id="app-calc" href="apps/calc/template.html">Calculator</a-->
+     <a id="app-chris" href="apps/chris/template.html" data-apptype='env'>Chris</a>
     <a id="app-notepad" href="apps/notepad/template.html" data-content-type="text/*" data-content-name-suffix=".txt,.md,.js,.go,.cc,.h">Notepad</a>
     <a id="app-paint3d" href="apps/paint3d/index.html">Paint3D</a>
-    <a id="app-console" href="apps/console/console.html" data-wid="debug-console">Console</a>
+    <a id="app-console" href="apps/console/console.html" data-wid='debug-console'>Console</a>
     <a id="app-media-selector" href="apps/mediaplayer/template.html#media-selector-template">Storage</a>
     <a id="app-media-player" href="apps/mediaplayer/template.html#media-player-template">MediaPlayer</a>
-    <a id="app-vnc" href="apps/vnc/template.html#app-vnc" class="hidden">VNC Client</a>
+    <a id="app-vnc" href="apps/vnc/template.html#app-vnc" class='hidden' >VNC Client</a>
     <a id="app-webrtc-rdp" href="https://binzume.github.io/webrtc-rdp/webxr/">WebRTC RDP</a>
-    <a id="app-vrm" href="apps/vrmviewer/template.html" data-content-type="application/vrm,application/glb,model/gltf-binary" class="hidden">VRM Viewer</a>
-    <a id="app-vrm-control-panel" href="apps/vrmviewer/template.html#app-vrm-control-panel" data-wid="vrm-control-panel">VRM ControlPanel</a>
+    <a id="app-vrm" href="apps/vrmviewer/template.html" data-content-type="application/vrm,application/glb,model/gltf-binary" class='hidden'>VRM Viewer</a>
+    <a id="app-vrm-control-panel" href="apps/vrmviewer/template.html#app-vrm-control-panel" data-wid='vrm-control-panel'>VRM ControlPanel</a>
     <a id="app-game001" href="apps/game001/template.html">Game001</a>
-    <a id="env-rosso" href="apps/rosso/index.html" data-apptype="env">env:ROSSO</a>
-    <a id="env-kurage" href="apps/kurage/index.html" data-apptype="env">env:Kurage</a>
-    <a id="env-starrysky" href="apps/starrysky/index.html" data-apptype="env">env:StarrySky</a>
-    <a id="env-physics" href="apps/physics/index.html" data-apptype="env">env:Physics</a>
-    <a id="env-default" href="index.html" data-apptype="env">env:Default</a>
-    <a id="env-empty" href="#empty" data-apptype="env">env:Empty</a>
-    <a id="app-taskmgr" href="apps/taskmgr/template.html" data-content-name-suffix=".session.json">Task Manager</a>
+    <a id="env-rosso" href="apps/rosso/index.html" data-apptype='env'>env:ROSSO</a>
+    <a id="env-kurage" href="apps/kurage/index.html" data-apptype='env'>env:Kurage</a>
+    <a id="env-starrysky" href="apps/starrysky/index.html" data-apptype='env'>env:StarrySky</a>
+    <a id="env-physics" href="apps/physics/index.html" data-apptype='env'>env:Physics</a>
+    <a id="env-default" href="index.html" data-apptype='env'>env:Default</a>
+    <a id="env-empty" href="#empty" data-apptype='env'>env:Empty</a>
+    <a id="app-taskmgr" href="apps/taskmgr/template.html" data-content-name-suffix='.session.json'>Task Manager</a>
     <a id="app-camera-test" href="apps/cameratest/template.html">CameraTest</a>
-    <a id="app-anchor-test" href="apps/xranchortest/index.html" data-wid="anchortest">AnchorTest</a>
-    <a id="app-calc3d" href="apps/calc3d/index.html" data-wid="calc3d">Calc3D</a>
+    <a id="app-anchor-test" href="apps/xranchortest/index.html" data-wid='anchortest'>AnchorTest</a>
+    <a id="app-calc3d" href="apps/calc3d/index.html" data-wid='calc3d'>Calc3D</a>
   </div>
 
-  <!-- Main Menu Template -->
-  <script type="text/html" id="main-menu-template">
-    <a-xywindow main-menu xywindow="background:true" position="0 1 -0.8" title="Menu"
-      width="5" height="1.8" scale="0.15 0.15 0.15"
-      xycontainer="direction:column;spacing:0.05">
+  <!-- menu pane -->
+  <script type='text/html' id="main-menu-template">
+    <a-xywindow main-menu xywindow="background:true" position="0 1 -0.8" title="Menu" width="5" height="1.8" scale="0.15 0.15 0.15" xycontainer="direction:column;spacing:0.05">
       <a-xycontainer width="5" height="0.6" direction="row" align-items="stretch" justify-items="stretch" spacing="0.05">
         <a-xybutton label="Apps" width="1" launch-on-click="appid:applist"></a-xybutton>
         <a-xybutton label="Storage" width="1" launch-on-click="appid:app-media-selector"></a-xybutton>
         <a-xybutton label="Console" width="1" launch-on-click="appid:app-console"></a-xybutton>
         <a-xybutton name="exitVRButton" label="Exit" width="1"></a-xybutton>
       </a-xycontainer>
-      <a-xycontainer search-box width="5" height="0.6" direction="row" align-items="stretch" justify-items="stretch" spacing="0.05">
+      <a-xycontainer search-box width="5" height="0.6" direction="row" align-items="stretch" justify-items="stretch"  spacing="0.05">
         <a-xyinput name="searchKeyword" width="3"></a-xyinput>
-        <a-xybutton name="searchButton" label="🔍" width="1"></a-xybutton>
+        <a-xybutton name="searchButton" label="&#x1F50D;&#xFE0E;" width="1"></a-xybutton>
       </a-xycontainer>
-      <a-xycontainer width="5" height="0.6" direction="row" align-items="stretch" justify-items="stretch" spacing="0.05">
+      <a-xycontainer width="5" height="0.6" direction="row" align-items="stretch" justify-items="stretch"  spacing="0.05">
         <a-xylabel simple-clock width="3" height="0.6" value="0000-00-00 00:00:00"></a-xylabel>
       </a-xycontainer>
     </a-xywindow>
   </script>
 
-  <!-- Apps Panel -->
-  <script type="text/html" id="apps-panel">
-    <a-xywindow apps-panel xywindow="closable:false;background:true" position="0 2.0 -1.5"
-      scale="0.15 0.15 0.15" title="Apps" width="5" height="7.5" xycontainer="direction:column">
-      <a-xyscroll width="5" height="5.2" scrollbar="false">
+  <!-- App list -->
+  <script type='text/html' id="apps-panel">
+    <a-xywindow apps-panel xywindow="closable:false;background:true" position="0 2.0 -1.5" scale="0.15 0.15 0.15" title="Apps" width="5" height="7.5" xycontainer="direction:column">
+      <a-xyscroll width=5 height=5.2 scrollbar=false>
         <a-entity name="apps-panel-list" xylist="" xyrect=""></a-entity>
       </a-xyscroll>
       <a-xycontainer width="5" height="0.8" direction="row" align-items="stretch" justify-items="stretch" spacing="0.05">
-        <a-xybutton name="close-button" label="×" width="1" position="0 -1.59 0.1"></a-xybutton>
+        <a-xybutton name="close-button" label="x" width="1" position="0 -1.59 0.1"></a-xybutton>
       </a-xycontainer>
     </a-xywindow>
   </script>
 
-  <script type="text/html" id="empty"></script>
+  <!-- Empty app -->
+  <script type='text/html' id="empty"></script>
 
-  <!-- A-Frame Scene -->
-  <a-scene fog="type: linear; color:#000; far: 20;" renderer="antialias:true;highRefreshRate:true;foveationLevel:0">
-    <a-entity id="mouse-cursor" cursor="rayOrigin: mouse; fuse:false" raycaster="objects:.collidable;far:5500"></a-entity>
+  <!-- A-Frame scene -->
+  <a-scene fog="type: linear; color:#f4cccc; far: 20;" renderer="antialias:true;highRefreshRate:true;foveationLevel:0">
+    <a-entity id='mouse-cursor' cursor="rayOrigin: mouse; fuse:false" raycaster="objects:.collidable;far:5500"></a-entity>
     <a-entity hand-controller=""></a-entity>
 
     <a-assets>
-      <img id="floor" src="assets/floor.png" />
+       <img id="floor" src="assets/floor.png">
     </a-assets>
 
-    <a-entity id="env">
-      <a-plane wireframe="true" width="10" height="10" segments-height="10" segments-width="10"
-        rotation="90 0 0" color="#333"></a-plane>
+    <a-entity id='env'>
+      <a-plane wireframe='true' width='10' height='10' segments-height='10' segments-width='10' rotation='90 0 0' color="#aaaaaa"></a-plane>
     </a-entity>
-
-    <a-plane material="src:#floor; repeat:700 700; transparent:true;" height="500" width="500" rotation="-90 0 0"></a-plane>
-    <a-sky color="#000000"></a-sky>
-
+<a-plane material="src:#floor; repeat: 700 700; transparent: true;" height="500" width="500" rotation="-90 0 0"></a-plane>
+      <a-sky color="#ffffff"></a-sky>
     <a-entity id="camera-rig" position-controls="axismove:x" camera-control>
       <a-camera position="0 1.5 0" look-controls="enabled:false" wasd-controls="enabled:false"></a-camera>
-      <a-entity laser-controls="hand:right" id="rightHand" raycaster="objects:.collidable" gesture="button:grip"></a-entity>
-      <a-entity laser-controls="hand:left" id="leftHand" raycaster="objects:.collidable"></a-entity>
-      <a-xykeyboard ime="true" distance="0.7" scale="0.22 0.22 0.22"
-        position="0 0.9 -1" rotation="-30 0 0"></a-xykeyboard>
+      <a-entity laser-controls="hand: right" id="rightHand" raycaster="objects:.collidable" gesture="button:grip"></a-entity>
+      <a-entity laser-controls="hand: left" id="leftHand" raycaster="objects:.collidable"></a-entity>
+
+      <!-- kbd -->
+      <a-xykeyboard ime="true" distance="0.7" scale='0.22 0.22 0.22' position="0 0.9 -1" rotation='-30 0 0'></a-xykeyboard>
     </a-entity>
+
   </a-scene>
 
-  <a href="storage/settings.html" class="overlay-link">Storage Manager</a>
-  <a href="flags/flags.html" class="overlay-link">Flags</a>
 
+  <div style="position:absolute;top:10pt;right:80pt;width:100pt;background-color:white;border-radius:4pt;text-align:center;">
+    <a href="storage/settings.html">Storage Manager</a>
+  </div>
+  <div style="position:absolute;top:10pt;right:190pt;width:50pt;background-color:white;border-radius:4pt;text-align:center;">
+    <a href="flags/flags.html">Flags</a>
+  </div>
 </body>
+
 </html>
