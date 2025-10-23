@@ -6,9 +6,8 @@
 
 const gapiUrl = 'https://apis.google.com/js/api.js';
 const clientIds = {
-    "http://localhost:8080": "86954684848-e879qasd2bnnr4pcdiviu68q423gbq4m.apps.googleusercontent.com",
-    "http://nas.binzume.net": "763907720984-n3vo8j6d788jdg22p7sfqoturvtbqk3i.apps.googleusercontent.com",
-    "https://binzume.github.io": "86954684848-okobt1r6kedh2cskabcgmbbqe0baphjb.apps.googleusercontent.com"
+    "web": "1061704433168-qjus4i8v8li3uqv75n6fksfe7l7qrt7f.apps.googleusercontent.com"
+    
 };
 
 export class GoogleDrive {
